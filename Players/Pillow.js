@@ -4,6 +4,7 @@ export default class Pillow {
         this.totalOfAttacks = 5;
         this.isDefending = false;
         this.lifeHealth = 100;
+        this.isReloading = false; // Adicionando uma flag para controlar o recarregamento
     }
 
     preload() {
@@ -24,7 +25,8 @@ export default class Pillow {
 
         var spaceKey = this.game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         spaceKey.on("down", function(event) {
-            if (this.totalOfAttacks == 0) {
+            if (this.totalOfAttacks === 0 && !this.isReloading) {
+                this.isReloading = true; 
                 this.game.time.addEvent({
                     delay: 3000,
                     callback: this.recharge,
@@ -36,6 +38,7 @@ export default class Pillow {
                 this.launchPillowSpecialAttack();
                 this.attackSound.play();
                 this.totalOfAttacks -= 1;
+                this.launchPillowSpecialAttack();
             }
         }, this);
         var downKey = this.game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
@@ -53,8 +56,10 @@ export default class Pillow {
         }, this);
 
     }
+
     recharge() {
-        this.totalOfAttacks = 5; 
+        this.totalOfAttacks = 5;
+        this.isReloading = false; 
     }
 
     update() {
@@ -64,7 +69,6 @@ export default class Pillow {
 
     launchPillowSpecialAttack() {
         var attackDirection = (this.player.scaleX > 0) ? 1 : -1;
-
         var attackStartX = this.player.x + (attackDirection === 1 ? 100 : -100);
 
         this.pillowSpecialAttack = this.game.physics.add.sprite(attackStartX, this.player.y, 'pillowSpecialAttack');
@@ -134,7 +138,6 @@ export default class Pillow {
     }
 
     handlePillowMovements() {
-
         if (this.cursors.right.isDown) {
             this.player.setVelocityX(550);
             this.player.scaleX = 0.75;
