@@ -2,6 +2,7 @@ export default class Capy {
 
     constructor(game) {
         this.game = game;
+        this.lifeHealth = 100;
     }
 
     preload() {
@@ -11,7 +12,9 @@ export default class Capy {
     }
 
     create() {
-        this.player = this.game.physics.add.sprite(560, 200, 'capy', 4).setScale(10).refreshBody();
+        this.player = this.game.physics.add.sprite(200, 200, 'capy', 4).setScale(10).refreshBody();
+        this.specialAttacks = this.game.physics.add.group();
+        this.player.flipX = true;
         this.player.setCollideWorldBounds(true);
         this.createCapyAnims();
         this.A_key = this.game.input.keyboard.addKey('A');
@@ -71,6 +74,12 @@ export default class Capy {
 
         
     }
+
+    hittedBySpecialAttack(player, attack) {
+        attack.disableBody(true, true);
+        this.lifeHealth =- 10;
+        console.log(this.lifeHealth);
+   }
 
     checkWorldBounds() {
         if (this.player.x < 0) {
