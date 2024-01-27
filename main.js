@@ -3,7 +3,7 @@ import MainScene from './Scenes/MainScene';
 
 const config = {
   type: Phaser.AUTO,
-  width: 1200,
+  width: 1024,
   height: 600,
   physics: {
     default: 'arcade',
@@ -11,7 +11,7 @@ const config = {
       gravity: { y: 200 }
     }
   },
-  scenes: MainScene
+  scene: MainScene
 }
 
 new Phaser.Game(config);
