@@ -1,6 +1,7 @@
 export default class Pillow {
     constructor(game) {
         this.game = game;
+        this.totalOfAttacks = 5;
     }
 
     preload() {
@@ -10,6 +11,7 @@ export default class Pillow {
     }
 
     create() {
+        
         this.player = this.game.physics.add.sprite(200, 200, 'pillow').setScale(0.75).refreshBody();
         this.player.setCollideWorldBounds(true);
         this.createPillowAnims();
@@ -17,8 +19,23 @@ export default class Pillow {
 
         var spaceKey = this.game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         spaceKey.on("down", function(event) {
-            this.launchPillowSpecialAttack();
+            if (this.totalOfAttacks == 0) {
+                this.game.time.addEvent({
+                    delay: 3000,
+                    callback: this.recharge,
+                    callbackScope: this
+                });
+            }
+
+            if (this.totalOfAttacks > 0) {
+                this.launchPillowSpecialAttack();
+                this.totalOfAttacks -= 1;
+            }
         }, this);
+
+    }
+    recharge() {
+        this.totalOfAttacks = 5; 
     }
 
     update() {
@@ -39,7 +56,7 @@ export default class Pillow {
 
         pillowSpecialAttack.setVelocityX(attackSpeed);
         pillowSpecialAttack.setAccelerationY(attackAcceleration)
-        this.game.time.delayedCall(5000, function () {
+        this.game.time.delayedCall(1500, function () {
             pillowSpecialAttack.destroy();
         }, [], this);
     }

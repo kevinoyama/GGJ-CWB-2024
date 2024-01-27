@@ -14,7 +14,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('bed', '../assets/bed-example.jpg');
+        this.load.image('bed', '../assets/Capybaras_3.jpg');
         this.load.image('pillowSpecialAttack', '../assets/sprite_31.png');
         this.Pillow.preload();
         this.Capy.preload();
