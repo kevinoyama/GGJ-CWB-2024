@@ -6,6 +6,7 @@ export default class MainScene extends Phaser.Scene {
         super();
         this.counter = 0;
         this.counter2 = 0;
+        this.life = 3;
     }
 
     preload() {
@@ -17,19 +18,32 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
-        this.add.image(512, 200, 'bed');
-        this.pillow = this.physics.add.sprite(200,200,'pillow').setScale(7).refreshBody();
 
-        // Cria um evento para a tecla de espaço
+        this.add.image(512, 200, 'bed');
+        this.pillow = this.physics.add.sprite(200,200,'pillow').setScale(5).refreshBody();
+        this.pillow2 = this.physics.add.sprite(200,200,'pillow').setScale(5).refreshBody();
+
         var spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         spaceKey.on("down", function(event) {
             this.launchPillowSpecialAttack();
         }, this);
 
-        // Cria as animações para o travesseiro
+        var rightKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+        rightKey.on("down", function(event) {
+            this.pillow.setVelocityX(550)
+            this.pillow.scaleX = 4
+        }, this);
+
+        var leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+        leftKey.on("down", function(event) {
+            this.pillow.setVelocityX(-550)
+            this.pillow.scaleX = -4
+        }, this);
+
+
         this.anims.create({
             key: 'right',
-            frames: this.anims.generateFrameNumbers('pillow', { start: 0, end: 3}),
+            frames: this.anims.generateFrameNumbers('pillow', { start: 0, end: 4}),
             frameRate: 10,
             repeat: -1
         });
@@ -42,7 +56,7 @@ export default class MainScene extends Phaser.Scene {
 
         this.anims.create({
             key: 'left',
-            frames: this.anims.generateFrameNumbers('pillow', { start: 5, end: 8}),
+            frames: this.anims.generateFrameNumbers('pillow', { start: 5, end: -8}),
             frameRate: 10,
             repeat: -1
         });
@@ -56,6 +70,10 @@ export default class MainScene extends Phaser.Scene {
         });
         
         this.pillow.setCollideWorldBounds(true);
+        this.pillow2.setCollideWorldBounds(true);
+        this.physics.add.collider(this.pillow, this.pillow2);
+        
+        
 
         this.cursors = this.input.keyboard.createCursorKeys();
         this.A_key = this.input.keyboard.addKey('A');
@@ -64,23 +82,46 @@ export default class MainScene extends Phaser.Scene {
         this.F_key = this.input.keyboard.addKey('F');
     }
 
-    // Método para lançar o ataque especial do travesseiro
-    launchPillowSpecialAttack() {
-        var pillowSpecialAttack = this.physics.add.sprite((this.pillow.x + 190), this.pillow.y, 'pillowSpecialAttack');
-        pillowSpecialAttack.setScale(); // Defina a escala conforme necessário
-        
-        // Animação para o ataque especial desaparecer depois de algum tempo
-        var attackSpeed = 1500;
-        pillowSpecialAttack.setVelocityX(attackSpeed);
     
-        // Define um temporizador para destruir o sprite após um determinado tempo
+    launchPillowSpecialAttack() {
+        var attackDirection = (this.pillow.scaleX > 0) ? 1 : -1; 
+    
+        
+        var attackStartX = this.pillow.x + (attackDirection === 1 ? 100 : -100);
+    
+        var pillowSpecialAttack = this.physics.add.sprite(attackStartX, this.pillow.y, 'pillowSpecialAttack');
+        pillowSpecialAttack.setScale(1); 
+        
+        var attackSpeed = 1500 * attackDirection;
+        var attackAcceleration = -2600;
+
+        pillowSpecialAttack.setVelocityX(attackSpeed);
+        pillowSpecialAttack.setAccelerationY(attackAcceleration)
         this.time.delayedCall(5000, function() {
-            pillowSpecialAttack.destroy(); // Destrua o sprite após 2000 milissegundos (2 segundos)
+            pillowSpecialAttack.destroy(); 
         }, [], this);
     }
+    
+    
 
     update() {
+        this.handlePlayerMovement();
+    this.checkWorldBounds();
+    // Restante do seu código de atualização...
+}
 
+handlePlayerMovement() {
+    // Lógica existente para movimento...
+}
+
+checkWorldBounds() {
+    if (this.pillow.x < 0) {
+        this.pillow.x = 0;
+        this.pillow.setVelocityX(1);
+    } else if (this.pillow.x > this.game.config.width) {
+        this.pillow.x = this.game.config.width;
+        this.pillow.setVelocityX(0);
+    }
         // this.pillowSpecialAttack.rotation += 0.1;
  
          // // player 1
@@ -119,7 +160,7 @@ export default class MainScene extends Phaser.Scene {
              this.pillow2.setVelocityX(-180);
              this.pillow2.setRotation(-this.counter2*3.15/20); */
  
-             this.pillow.setVelocityX(-180);
+             this.pillow.setVelocityX(-780);
              this.pillow.anims.play('left', true);
  
          }else if (this.cursors.right.isDown){
@@ -128,7 +169,7 @@ export default class MainScene extends Phaser.Scene {
              }else {this.counter2 += 1} 
              this.pillow2.setVelocityX(180);
              this.pillow2.setRotation(this.counter2*3.15/20); */
-             this.pillow.setVelocityX(180);
+             this.pillow.setVelocityX(780);
              this.pillow.anims.play('right', true);
          }
          else {
@@ -136,9 +177,11 @@ export default class MainScene extends Phaser.Scene {
              this.pillow.setVelocityX(0);
              this.pillow.play('turn');
          }
-         if (this.cursors.up.isDown){ //  && this.pillow.body.touching.down
-             this.pillow.setVelocityY(-500);
+         if (this.cursors.up.isDown && this.pillow.body.blocked.down){
+             this.pillow.setVelocityY(-1400);
+
          }
+         
  
          if(this.cursors.space.isDown) {
              this.pillow.play('punch-right');
