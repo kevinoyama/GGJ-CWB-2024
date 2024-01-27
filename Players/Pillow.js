@@ -14,6 +14,11 @@ export default class Pillow {
         this.player.setCollideWorldBounds(true);
         this.createPillowAnims();
         this.cursors = this.game.input.keyboard.createCursorKeys();
+
+        var spaceKey = this.game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        spaceKey.on("down", function(event) {
+            this.launchPillowSpecialAttack();
+        }, this);
     }
 
     update() {
@@ -80,9 +85,7 @@ export default class Pillow {
 
     handlePillowMovements() {
 
-        if (this.cursors.space.isDown) {
-            this.launchPillowSpecialAttack();
-        }
+     
 
         if (this.cursors.right.isDown) {
             this.player.setVelocityX(550);
