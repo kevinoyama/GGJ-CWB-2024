@@ -10,6 +10,7 @@ export default class Pillow {
         this.game.load.spritesheet('pillow', '../assets/pillow.png', {
             frameWidth: 300, frameHeight: 400
         });
+        this.game.load.audio('pillowAttackAudio',['../assets/Golpe aplicado travesseiro.m4a']);
     }
 
     create() {
@@ -18,6 +19,8 @@ export default class Pillow {
         this.player.setCollideWorldBounds(true);
         this.createPillowAnims();
         this.cursors = this.game.input.keyboard.createCursorKeys();
+
+        this.attackSound = this.game.sound.add('pillowAttackAudio');
 
         var spaceKey = this.game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         spaceKey.on("down", function(event) {
@@ -31,6 +34,7 @@ export default class Pillow {
 
             if (this.totalOfAttacks > 0) {
                 this.launchPillowSpecialAttack();
+                this.attackSound.play();
                 this.totalOfAttacks -= 1;
             }
         }, this);
@@ -60,10 +64,10 @@ export default class Pillow {
         var attackSpeed = 1500 * attackDirection;
         var attackAcceleration = -2600;
 
-        pillowSpecialAttack.setVelocityX(attackSpeed);
-        pillowSpecialAttack.setAccelerationY(attackAcceleration)
+        this.pillowSpecialAttack.setVelocityX(attackSpeed);
+        this.pillowSpecialAttack.setAccelerationY(attackAcceleration)
         this.game.time.delayedCall(1500, function () {
-            pillowSpecialAttack.destroy();
+            this.pillowSpecialAttack.destroy();
         }, [], this);
     }
 
