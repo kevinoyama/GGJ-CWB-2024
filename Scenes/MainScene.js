@@ -12,13 +12,13 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('bed', '../assets/bed-example.jpg');
         this.load.image('pillowSpecialAttack', '../assets/sprite_31.png');
         this.load.spritesheet('pillow', '../assets/pillow-sprite.png', {
-            frameWidth: 280, frameHeight: 270
+            frameWidth: 28, frameHeight: 27
         });
     }
 
     create() {
         this.add.image(512, 200, 'bed');
-        this.pillow = this.physics.add.sprite(200,200,'pillow');
+        this.pillow = this.physics.add.sprite(200,200,'pillow').setScale(7).refreshBody();
 
         // Cria um evento para a tecla de espaço
         var spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -49,7 +49,7 @@ export default class MainScene extends Phaser.Scene {
 
         this.anims.create({
             key: 'punch-right',
-            frames: this.anims.generateFrameNumbers('pillow', { start: 10, end: 10}),
+            frames: this.anims.generateFrameNumbers('pillow', { start: 9, end: 9}),
             frameRate: 30,
             repeat: -1,
             duration: 1000 
