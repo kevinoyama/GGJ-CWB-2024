@@ -10,8 +10,8 @@ Player 1 commands:
 - Throw object: F
 
 Player 2 Commands:
--- Walk right: Right ->
-- Walk Left: Left <-
+- Walk right: Right
+- Walk Left: Left
 - Jump: Up
 - Defense Position: Down
 - Throw object: Shift
