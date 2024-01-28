@@ -162,11 +162,13 @@ export default class Player {
             this.player.setVelocityX(550);
             this.player.scaleX = this.playerScale;
             this.player.play(this.walk_key, true);
+            this.player.flipX = false;
         } else if (this.commands.left.isDown) {
             this.isDefending = false;
             this.player.setVelocityX(-550);
             this.player.scaleX = -this.playerScale;
             this.player.anims.play(this.walk_key, true);
+            this.player.flipX = true;
         }
         else {
             this.player.setVelocityX(0);

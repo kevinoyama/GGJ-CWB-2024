@@ -15,6 +15,7 @@ export default class MainScene extends Phaser.Scene {
             spritesheet: '../assets/capysprite.png',
             attack_audio: '../assets/Golpe aplicado capivara.m4a',
             hitted_audio: '../assets/Golpe tomado Capivara.m4a',
+            backgroud: '../assets/Capybaras_3.jpg',
             special_attack_image: '../assets/sprite_31.png',
             start_y: 400,
             defend_frame_start: 20,
@@ -24,6 +25,7 @@ export default class MainScene extends Phaser.Scene {
             spritesheet: '../assets/pizzasprite.png',
             attack_audio: '../assets/Golpe aplicado pizza.m4a',
             hitted_audio: '../assets/Golpe tomado pizza.m4a',
+            backgroud: '../assets/pizza_background.jpg',
             special_attack_image: '../assets/sprite_31.png',
             start_y: 400,
             defend_frame_start: 20,
@@ -33,6 +35,7 @@ export default class MainScene extends Phaser.Scene {
             spritesheet: '../assets/Pillowsprite.png',
             attack_audio: '../assets/Golpe tomado travesseiro.m4a',
             hitted_audio: '../assets/Golpe tomado travesseiro.m4a',
+            backgroud: '../assets/pillow_background.jpg',
             start_y: 400,
             special_attack_image: '../assets/sprite_31.png',
             defend_frame_start: 20,
@@ -51,8 +54,8 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('bed', '../assets/Capybaras_3.jpg');
         this.load.image('title', '../assets/title.png');
+        this.load.image('background', this.player1Profile.backgroud);
         this.load.audio('audioFarm', ['../assets/Farm effect mp3.mp3']);
 
         this.player1.preload();
@@ -60,7 +63,6 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
-        this.add.image(512, 200, 'bed');
         this.initalBox = this.add.rectangle(512, 330, 1024, 660, 0x0000);
         this.initalBox.setAlpha(0.5);
         this.title = this.add.image(this.cameras.main.centerX, 250, 'title').setScale(0.5);
@@ -82,6 +84,7 @@ export default class MainScene extends Phaser.Scene {
 
         this.headerGroup.addMultiple([this.player1Health, this.player2Health, this.player1HealthBack, this.player2HealthBack, this.player1Name, this.player2Name]);
         this.headerGroup.setVisible(false);
+        this.add.image(512, 200, 'background');
         this.musicFarm = this.sound.add('audioFarm', {
             loop: true
         });
