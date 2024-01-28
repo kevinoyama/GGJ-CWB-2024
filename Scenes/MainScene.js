@@ -51,7 +51,9 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('bed', this.player1Profile.backgroud);
+        this.load.image('background', this.player1Profile.backgroud);
+        //this.load.video('intro','../assets/Capivara.mp4');
+
         this.load.audio('audioFarm', ['../assets/Farm effect mp3.mp3']);
 
         this.player1.preload();
@@ -59,7 +61,9 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
-        this.add.image(512, 200, 'bed');
+        this.add.image(512, 200, 'background');
+        //this.video = this.add.video(512, 200, 'intro');
+        //this.video.play();
         // this.physics.add.collider(this.Pizza.player, this.Capy.player);
         this.musicFarm = this.sound.add('audioFarm', {
             loop: true
