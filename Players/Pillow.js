@@ -30,7 +30,7 @@ export default class Pillow {
                 this.game.time.addEvent({
                     delay: 3000,
                     callback: this.recharge,
-                    callbackScope: this
+                 callbackScope: this
                 });
             }
 
