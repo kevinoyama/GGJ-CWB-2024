@@ -11,12 +11,13 @@ export default class Pillow {
         this.game.load.spritesheet('pillow', '../assets/Pillowsprite.png', {
             frameWidth: 300, frameHeight: 400
         });
+        this.game.load.image('pillowSpecialAttack', '../assets/pillow-projectile.png');
         this.game.load.audio('pillowAttackAudio',['../assets/Golpe aplicado travesseiro.m4a']);
     }
 
     create() {
         this.player = this.game.physics.add.sprite(200, 200, 'pillow').setScale(0.75).refreshBody();
-        this.specialAttacks = this.game.physics.add.group();
+        this.specialAttacks = this.game.add.group();
         this.player.setCollideWorldBounds(true);
         this.createPillowAnims();
         this.cursors = this.game.input.keyboard.createCursorKeys();
@@ -71,16 +72,18 @@ export default class Pillow {
         var attackDirection = (this.player.scaleX > 0) ? 1 : -1;
         var attackStartX = this.player.x + (attackDirection === 1 ? 100 : -100);
 
-        this.pillowSpecialAttack = this.game.physics.add.sprite(attackStartX, this.player.y, 'pillowSpecialAttack');
-        this.pillowSpecialAttack.setScale(1);
+        var pillowSpecialAttack = this.game.physics.add.sprite(attackStartX, this.player.y, 'pillowSpecialAttack');
+        pillowSpecialAttack.setScale(0.3);
+        pillowSpecialAttack.rotation = 1;
+        this.specialAttacks.add(pillowSpecialAttack);
 
-        var attackSpeed = 1500 * attackDirection;
+        var attackSpeed = 1200 * attackDirection;
         var attackAcceleration = -2600;
 
-        this.pillowSpecialAttack.setVelocityX(attackSpeed);
-        this.pillowSpecialAttack.setAccelerationY(attackAcceleration)
+        pillowSpecialAttack.setVelocityX(attackSpeed);
+        pillowSpecialAttack.setAccelerationY(attackAcceleration)
         this.game.time.delayedCall(1500, function () {
-            this.pillowSpecialAttack.destroy();
+            pillowSpecialAttack.destroy();
         }, [], this);
     }
 

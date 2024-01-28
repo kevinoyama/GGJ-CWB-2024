@@ -17,7 +17,6 @@ export default class MainScene extends Phaser.Scene {
 
     preload() {
         this.load.image('bed', '../assets/Capybaras_3.jpg');
-        this.load.image('pillowSpecialAttack', '../assets/sprite_31.png');
         this.load.audio('audioFarm', ['../assets/Farm effect mp3.mp3']);
         //this.Pillow.preload();
         this.Capy.preload();
@@ -33,8 +32,11 @@ export default class MainScene extends Phaser.Scene {
         this.musicFarm = this.sound.add('audioFarm',{
             loop: true
         });
-        this.musicFarm.play();
+        //this.musicFarm.play();
         this.sound.pauseOnBlur = true;
+
+
+        this.physics.add.overlap(this.Pillow.specialAttacks, this.Capy.player, this.capyHittedBySpecialAttack, null, this);
     }
 
     update() {
@@ -42,6 +44,15 @@ export default class MainScene extends Phaser.Scene {
         //this.Pillow.update();
         this.Pizza.update();
     }
+
+    capyHittedBySpecialAttack(attack, player) {
+        attack.disableBody(true, true);
+
+        if(!this.Capy.isDefending) {
+            this.Capy.lifeHealth -= 5;
+        }
+        console.log(this.Capy.lifeHealth);
+   }
 
 }
 
