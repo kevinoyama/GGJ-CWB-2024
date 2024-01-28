@@ -63,6 +63,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
+        this.add.image(512, 200, 'background');
         this.initalBox = this.add.rectangle(512, 330, 1024, 660, 0x0000);
         this.initalBox.setAlpha(0.5);
         this.title = this.add.image(this.cameras.main.centerX, 250, 'title').setScale(0.5);
@@ -84,7 +85,6 @@ export default class MainScene extends Phaser.Scene {
 
         this.headerGroup.addMultiple([this.player1Health, this.player2Health, this.player1HealthBack, this.player2HealthBack, this.player1Name, this.player2Name]);
         this.headerGroup.setVisible(false);
-        this.add.image(512, 200, 'background');
         this.musicFarm = this.sound.add('audioFarm', {
             loop: true
         });
