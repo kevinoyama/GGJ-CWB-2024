@@ -7,14 +7,14 @@ export default class Pillow {
     }
 
     preload() {
-        this.game.load.spritesheet('pillow', '../assets/pillow.png', {
+        this.game.load.spritesheet('pillow', '../assets/Pillowsprite.png', {
             frameWidth: 300, frameHeight: 400
         });
         this.game.load.audio('pillowAttackAudio',['../assets/Golpe aplicado travesseiro.m4a']);
     }
 
     create() {
-        this.player = this.game.physics.add.sprite(800, 200, 'pillow').setScale(0.75).refreshBody();
+        this.player = this.game.physics.add.sprite(200, 200, 'pillow').setScale(0.75).refreshBody();
         this.specialAttacks = this.game.physics.add.group();
         this.player.setCollideWorldBounds(true);
         this.createPillowAnims();
@@ -37,6 +37,15 @@ export default class Pillow {
                 this.attackSound.play();
                 this.totalOfAttacks -= 1;
             }
+        }, this);
+        var downKey = this.game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+        downKey.on('down', (event) => {
+            this.isDefending = true;
+            this.player.anims.play('pillow-defend', true);
+        }, this)
+
+        downKey.on('up', () => {
+            this.isDefending = false;
         }, this);
         this.CTRL_key = this.game.input.keyboard.addKey('CTRL');
         this.CTRL_key.on("down",() => {
@@ -74,24 +83,35 @@ export default class Pillow {
     createPillowAnims() {
         this.game.anims.create({
             key: 'pillow-walk',
-            frames: this.game.anims.generateFrameNumbers('pillow', { start: 0, end: 3 }),
+            frames: this.game.anims.generateFrameNumbers('pillow', { start: 0, end: 5 }),
             frameRate: 20,
             repeat: -1
         });
 
         this.game.anims.create({
-            key: 'pillow-turn',
-            frames: [{ key: 'pillow', frame: 0 }],
-            frameRate: 20
+            key: 'pillow-steady',
+            frames: this.game.anims.generateFrameNumbers('pillow', {
+                start: 16, end: 19
+            }),
+            frameRate: 10
         });
 
         this.game.anims.create({
             key: 'pillow-jump',
             frames: this.game.anims.generateFrameNumbers('pillow', {
-                start: 8, end: 15
+                start: 8, end: 11
             }),
-            frameRate: 0.01,
-            repeat: 1,
+            frameRate: 10,
+            repeat: -1,
+        });
+
+        this.game.anims.create({
+            key: 'pillow-fall',
+            frames: this.game.anims.generateFrameNumbers('pillow', {
+                start: 12, end: 15
+            }),
+            frameRate: 10,
+            repeat: -1
         });
 
         this.game.anims.create({
@@ -103,10 +123,10 @@ export default class Pillow {
 
         this.game.anims.create({
             key: 'pillow-defend',
-            frames: this.game.anims.generateFrameNumbers('pillow', { start: 16, end: 19 }),
-            frameRate: 10,
-            repeat: 1
+            frames: this.game.anims.generateFrameNumbers('pillow', { start: 20, end: 23 }),
+            frameRate: 30,
         });
+
     }
 
     attacking() {
@@ -116,28 +136,35 @@ export default class Pillow {
     handlePillowMovements() {
 
         if (this.cursors.right.isDown) {
-            this.isDefending = true;
             this.player.setVelocityX(550);
             this.player.scaleX = 0.75;
             this.player.play('pillow-walk', true);
         } else if (this.cursors.left.isDown) {
-            this.isDefending = true;
             this.player.setVelocityX(-550);
             this.player.scaleX = -0.75;
             this.player.anims.play('pillow-walk', true);
-        } else if (this.cursors.down.isDown) {
-            this.isDefending = false;
+        } 
+        // else if (this.cursors.down.isDown) {
+        //     this.isDefending = false;
+        //     this.player.setVelocityX(0);
+        //     this.player.anims.play('pillow-defend', true);
+        // }
+        else {
             this.player.setVelocityX(0);
-            this.player.anims.play('pillow-defend', true);
-        }else {
-            this.isDefending = true;
-            this.player.setVelocityX(0);
-            this.player.play('pillow-turn');
+            if(!this.isDefending){
+                this.player.play('pillow-steady', true);
+            }
         }
 
         if (this.cursors.up.isDown && this.player.body.blocked.down) {
             this.isDefending = false;
             this.player.setVelocityY(-1400);
+        } else if (this.player.body.velocity.y < 0) {
+            this.player.play('pillow-jump', true);
+        }
+
+        if(this.player.body.velocity.y > 0){
+            this.player.play('pillow-fall', true);
         }
     }
 

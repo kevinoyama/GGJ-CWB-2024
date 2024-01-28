@@ -26,14 +26,11 @@ export default class MainScene extends Phaser.Scene {
         this.Pillow.create();
         this.Capy.create();
         this.physics.add.collider(this.Pillow.player, this.Capy.player);
-        this.physics.add.collider(this.Capy.player, this.Pillow.pillowSpecialAttack);
-        this.physics.add.overlap(this.Capy.player, this.Pillow.pillowSpecialAttack, this.Capy.hittedBySpecialAttack, null);
-        this.musicFarm = this.sound.add('audioFarm');
-
+        this.musicFarm = this.sound.add('audioFarm',{
+            loop: true
+        });
         this.musicFarm.play();
-
         this.sound.pauseOnBlur = true;
-
     }
 
     update() {
