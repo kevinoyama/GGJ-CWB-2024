@@ -13,6 +13,7 @@ export default class MainScene extends Phaser.Scene {
             name: 'capy',
             spritesheet: '../assets/capysprite.png',
             attack_audio: '../assets/Golpe aplicado capivara.m4a',
+            backgroud: '../assets/Capybaras_3.jpg',
             special_attack_image: '../assets/sprite_31.png',
             start_y: 400,
             defend_frame_start: 20 ,
@@ -21,6 +22,7 @@ export default class MainScene extends Phaser.Scene {
             name: 'pizza',
             spritesheet: '../assets/pizzasprite.png',
             attack_audio: '../assets/Golpe aplicado pizza.m4a',
+            backgroud: '../assets/pizza_background.jpg',
             special_attack_image: '../assets/sprite_31.png',
             start_y: 400,
             defend_frame_start: 20 ,
@@ -29,6 +31,7 @@ export default class MainScene extends Phaser.Scene {
             name: 'pillow',
             spritesheet: '../assets/Pillowsprite.png',
             attack_audio: '../assets/Golpe tomado travesseiro.m4a',
+            backgroud: '../assets/pillow_background.jpg',
             // start_x: 600,
             start_y: 400,
             special_attack_image: '../assets/sprite_31.png',
@@ -48,7 +51,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('bed', '../assets/Capybaras_3.jpg');
+        this.load.image('bed', this.player1Profile.backgroud);
         this.load.audio('audioFarm', ['../assets/Farm effect mp3.mp3']);
 
         this.player1.preload();
