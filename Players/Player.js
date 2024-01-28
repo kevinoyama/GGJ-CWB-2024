@@ -3,11 +3,13 @@ export default class Player {
         this.game = game;
         this.config = config;
         this.playerId = playerId;
+        this.playerScale = 0.5;
         this.totalOfAttacks = 5;
         this.isDefending = false;
         this.isAttacking = false;
         this.lifeHealth = 100;
         this.attack_audio_key = this.config.name + 'attack_audio';
+        this.hitted_audio_key = this.config.name + 'hitted_audio';
         // anims keys
         this.walk_key = this.config.name + '-walk';
         this.steady_key = this.config.name + '-steady';
@@ -25,11 +27,12 @@ export default class Player {
             frameWidth: 300, frameHeight: 400 // 
         });
         this.game.load.audio(this.attack_audio_key, [this.config.attack_audio]);
+        this.game.load.audio(this.hitted_audio_key, [this.config.hitted_audio]);
         this.game.load.image(this.special_attack_key, this.config.special_attack_image);
     }
 
     create() {
-        this.player = this.game.physics.add.sprite(this.config.start_x, this.config.start_y, this.config.name).setScale(0.75).refreshBody();
+        this.player = this.game.physics.add.sprite(this.config.start_x, this.config.start_y, this.config.name).setScale(this.playerScale).refreshBody();
         this.specialAttacks = this.game.physics.add.group();
         this.player.setCollideWorldBounds(true);
         this.createAnims();
@@ -43,6 +46,7 @@ export default class Player {
         }
 
         this.attackSound = this.game.sound.add(this.attack_audio_key);
+        this.hittedSound = this.game.sound.add(this.hitted_audio_key);
 
         //var spaceKey = this.game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.commands.special_attack.on("down", function (event) {
@@ -156,12 +160,12 @@ export default class Player {
         if (this.commands.right.isDown) {
             this.isDefending = false;
             this.player.setVelocityX(550);
-            this.player.scaleX = 0.75;
+            this.player.scaleX = this.playerScale;
             this.player.play(this.walk_key, true);
         } else if (this.commands.left.isDown) {
             this.isDefending = false;
             this.player.setVelocityX(-550);
-            this.player.scaleX = -0.75;
+            this.player.scaleX = -this.playerScale;
             this.player.anims.play(this.walk_key, true);
         }
         else {
