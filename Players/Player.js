@@ -5,6 +5,7 @@ export default class Player {
         this.playerId = playerId;
         this.totalOfAttacks = 5;
         this.isDefending = false;
+        this.isAttacking = false;
         this.lifeHealth = 100;
         this.attack_audio_key = this.config.name + 'attack_audio';
         // anims keys
@@ -18,12 +19,12 @@ export default class Player {
 
     }
 
-    
+
     preload() {
         this.game.load.spritesheet(this.config.name, this.config.spritesheet, {
             frameWidth: 300, frameHeight: 400 // 
         });
-        this.game.load.audio(this.attack_audio_key,[this.config.attack_audio]);
+        this.game.load.audio(this.attack_audio_key, [this.config.attack_audio]);
         this.game.load.image(this.special_attack_key, this.config.special_attack_image);
     }
 
@@ -44,7 +45,7 @@ export default class Player {
         this.attackSound = this.game.sound.add(this.attack_audio_key);
 
         //var spaceKey = this.game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.commands.special_attack.on("down", function(event) {
+        this.commands.special_attack.on("down", function (event) {
             if (this.totalOfAttacks == 0) {
                 this.game.time.addEvent({
                     delay: 3000,
@@ -60,7 +61,7 @@ export default class Player {
             }
         }, this);
         //var downKey = this.game.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
-       this.commands.defend.on('down', (event) => {
+        this.commands.defend.on('down', (event) => {
             this.isDefending = true;
             this.player.anims.play(this.defend_key, true);
         }, this)
@@ -93,7 +94,7 @@ export default class Player {
     }
 
     recharge() {
-        this.totalOfAttacks = 5; 
+        this.totalOfAttacks = 5;
     }
 
     createAnims() {
@@ -137,33 +138,35 @@ export default class Player {
             repeat: 1,
         });
 
-         this.game.anims.create({
+        this.game.anims.create({
             key: this.defend_key,
-            frames: this.game.anims.generateFrameNumbers(this.config.name, { start: 20, end: 23 }),
+            frames: this.game.anims.generateFrameNumbers(this.config.name, { start: this.config.defend_frame_start, end: this.config.defend_frame_end }),
             frameRate: 30,
             repeat: 0
         });
 
     }
 
-/*     attacking() {
-        this.player.play('pizza-punch', true);
-    } */
+    /*     attacking() {
+            this.player.play('pizza-punch', true);
+        } */
 
     handleMovements() {
 
         if (this.commands.right.isDown) {
+            this.isDefending = false;
             this.player.setVelocityX(550);
             this.player.scaleX = 0.75;
             this.player.play(this.walk_key, true);
         } else if (this.commands.left.isDown) {
+            this.isDefending = false;
             this.player.setVelocityX(-550);
             this.player.scaleX = -0.75;
             this.player.anims.play(this.walk_key, true);
-        } 
+        }
         else {
             this.player.setVelocityX(0);
-            if(!this.isDefending){
+            if (!this.isDefending) {
                 this.player.play(this.steady_key, true);
             }
         }
@@ -172,10 +175,12 @@ export default class Player {
             this.isDefending = false;
             this.player.setVelocityY(-1400);
         } else if (this.player.body.velocity.y < 0) {
+            this.isDefending = false;
             this.player.play(this.jump_key, true);
         }
 
-        if(this.player.body.velocity.y > 0){
+        if (this.player.body.velocity.y > 0) {
+            this.isDefending = false;
             this.player.play(this.fall_key, true);
         }
     }
