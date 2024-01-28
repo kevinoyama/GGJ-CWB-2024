@@ -103,12 +103,6 @@ export default class Capy {
 
         
     }
-    hittedBySpecialAttack(player, attack) {
-        console.log('herew');
-        attack.disableBody(true, true);
-        this.lifeHealth -= 10;
-        console.log(this.lifeHealth);
-   }
 
     checkWorldBounds() {
         if (this.player.x < 0) {
