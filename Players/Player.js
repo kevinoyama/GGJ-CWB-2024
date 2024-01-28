@@ -33,6 +33,9 @@ export default class Player {
 
     create() {
         this.player = this.game.physics.add.sprite(this.config.start_x, this.config.start_y, this.config.name).setScale(this.playerScale).refreshBody();
+        if(this.playerId == 2) {
+            this.player.scaleX = -this.playerScale;
+        }
         this.specialAttacks = this.game.physics.add.group();
         this.player.setCollideWorldBounds(true);
         this.createAnims();
@@ -162,13 +165,11 @@ export default class Player {
             this.player.setVelocityX(550);
             this.player.scaleX = this.playerScale;
             this.player.play(this.walk_key, true);
-            this.player.flipX = false;
         } else if (this.commands.left.isDown) {
             this.isDefending = false;
             this.player.setVelocityX(-550);
             this.player.scaleX = -this.playerScale;
             this.player.anims.play(this.walk_key, true);
-            this.player.flipX = true;
         }
         else {
             this.player.setVelocityX(0);

@@ -9,35 +9,35 @@ export default class MainScene extends Phaser.Scene {
         this.counter = 0;
         this.counter2 = 0;
         this.life = 3;
-        this.timerTime = 5;
+        this.timerTime = 90;
         this.configProfiles = [{
-            name: 'capy  ',
+            name: 'Capy  ',
             spritesheet: '../assets/capysprite.png',
             attack_audio: '../assets/Golpe aplicado capivara.m4a',
             hitted_audio: '../assets/Golpe tomado Capivara.m4a',
             backgroud: '../assets/Capybaras_3.jpg',
-            special_attack_image: '../assets/sprite_31.png',
+            special_attack_image: '../assets/Pinhao.png',
             start_y: 400,
             defend_frame_start: 20,
             defend_frame_end: 22
         }, {
-            name: 'pizza ',
+            name: 'Pizza ',
             spritesheet: '../assets/pizzasprite.png',
             attack_audio: '../assets/Golpe aplicado pizza.m4a',
             hitted_audio: '../assets/Golpe tomado pizza.m4a',
             backgroud: '../assets/pizza_background.jpg',
-            special_attack_image: '../assets/sprite_31.png',
+            special_attack_image: '../assets/Calabresa.png',
             start_y: 400,
             defend_frame_start: 20,
             defend_frame_end: 23
         }, {
-            name: 'pillow',
+            name: 'Pillow',
             spritesheet: '../assets/Pillowsprite.png',
             attack_audio: '../assets/Golpe tomado travesseiro.m4a',
             hitted_audio: '../assets/Golpe tomado travesseiro.m4a',
             backgroud: '../assets/pillow_background.jpg',
             start_y: 400,
-            special_attack_image: '../assets/sprite_31.png',
+            special_attack_image: '../assets/pillow-projectile.png',
             defend_frame_start: 20,
             defend_frame_end: 23
         }];
@@ -51,12 +51,15 @@ export default class MainScene extends Phaser.Scene {
         this.player2Profile = this.configProfiles[this.player2ProfileNumber];
         this.player1 = new Player(this, { ...this.player1Profile, start_x: 200 }, 1);
         this.player2 = new Player(this, { ...this.player2Profile, start_x: 824 }, 2);
+        this.gameStarted = false;
+        this.gameOver = false;
     }
 
     preload() {
         this.load.image('title', '../assets/title.png');
         this.load.image('background', this.player1Profile.backgroud);
-        this.load.audio('audioFarm', ['../assets/Farm effect mp3.mp3']);
+        this.load.audio('audioBack', ['../assets/2.secret_level_1.mp3']);
+        this.load.audio('audioWon', ['../assets/Medieval_Cheers.mp3']);
 
         this.player1.preload();
         this.player2.preload();
@@ -75,19 +78,32 @@ export default class MainScene extends Phaser.Scene {
         this.player1Name = this.add.text(23, 38, '', {
             fontFamily: 'Arial',
             fontSize: 24,
-            color: '#ffffff'
+            color: '#000',
+            fontWeight: 800,
+            backgroundColor: '#FFF',
+            padding: {
+                x: 20
+            },
+            borderRadius: 10
         });
         this.player2Name = this.add.text(607, 38, '', {
             fontFamily: 'Arial',
             fontSize: 24,
-            color: '#ffffff'
+            color: '#000',
+            fontWeight: 800,
+            backgroundColor: '#FFF',
+            padding: {
+                x: 20
+            },
+            borderRadius: 10
         });
 
         this.headerGroup.addMultiple([this.player1Health, this.player2Health, this.player1HealthBack, this.player2HealthBack, this.player1Name, this.player2Name]);
         this.headerGroup.setVisible(false);
-        this.musicFarm = this.sound.add('audioFarm', {
+        this.musicBack = this.sound.add('audioBack', {
             loop: true
         });
+        this.musicWon = this.sound.add('audioWon');
         this.sound.pauseOnBlur = true;
 
         this.startButton = this.add.text(this.cameras.main.centerX, 500, 'Start', {
@@ -102,6 +118,19 @@ export default class MainScene extends Phaser.Scene {
             borderRadius: 10
         }).setOrigin(0.5).setInteractive();
 
+        this.GameWonTitle = this.add.text(this.cameras.main.centerX - 10, 330,'Player 1 won',{
+            fontFamily: 'Arial',
+            fontSize: 64,
+            color: '#ffffff',
+            padding: {
+                x: 20,
+                y: 10
+            },
+            borderRadius: 10
+        }).setOrigin(0.5);
+
+        this.GameWonTitle.setVisible(false);
+
         this.startButton.on('pointerdown', () => {
             if (!this.gameStarted && !this.gameOver) {
                 this.startGame();
@@ -111,11 +140,19 @@ export default class MainScene extends Phaser.Scene {
         });
 
         this.timeLeft = this.timerTime;
-        this.timerText = this.add.text(this.cameras.main.centerX, 80, '', {
+        this.timerText = this.add.text(this.cameras.main.centerX, 80, 'Timer left: 90', {
             fontFamily: 'Arial',
             fontSize: 24,
-            color: '#ffffff'
+            color: '#000',
+            fontWeight: 800,
+            backgroundColor: '#FFF',
+            padding: {
+                x: 5,
+                y: 5
+            },
+            borderRadius: 10
         }).setOrigin(0.5);
+        this.timerText.setVisible(false);
         // this.player1.create();
         // this.player2.create();
         
@@ -134,12 +171,15 @@ export default class MainScene extends Phaser.Scene {
 
         this.player1.hittedSound.play();
 
-        if (!this.player1.isDefending) {
+        if (!this.player1.isDefending && !this.gameOver) {
             this.player1.lifeHealth -= 5;
             var xAxis = 20 + 2 * this.player1.lifeHealth;
             var size = 4 * this.player1.lifeHealth;
             this.player1Health.setSize(size, 30);
             this.player1Health.setPosition(xAxis, 80);
+            if(this.player1.lifeHealth <= 0) {
+                this.endGame();
+            }
         }
         console.log('Player 1: ', this.player1.lifeHealth);
     }
@@ -147,12 +187,15 @@ export default class MainScene extends Phaser.Scene {
     handlePlayer2HittedBySpecialAttack(player, attack) {
         attack.disableBody(true, true);
 
-        if (!this.player2.isDefending) {
+        if (!this.player2.isDefending && !this.gameOver) {
             this.player2.lifeHealth -= 5;
             var xAxis = 1004 - 2 * this.player2.lifeHealth;
             var size = 4 * this.player2.lifeHealth;
             this.player2Health.setSize(size, 30);
             this.player2Health.setPosition(xAxis, 80);
+            if(this.player2.lifeHealth <= 0) {
+                this.endGame();
+            }
         }
         console.log('Player 2: ', this.player2.lifeHealth);
     }
@@ -162,6 +205,9 @@ export default class MainScene extends Phaser.Scene {
     }
 
     startGame() {
+        this.player1.lifeHealth = 100;
+        this.player2.lifeHealth = 100;
+        this.GameWonTitle.setVisible(false);
         this.initalBox.setVisible(false);
         this.title.setVisible(false);
         this.player1Health.setSize(400, 30);
@@ -170,7 +216,7 @@ export default class MainScene extends Phaser.Scene {
         this.player2Health.setPosition(804, 80);
         this.headerGroup.setVisible(true);
         this.gameStarted = true;
-        this.musicFarm.play();
+        this.musicBack.play();
         this.startButton.setVisible(false);
         this.player1.create();
         this.player2.create();
@@ -179,7 +225,7 @@ export default class MainScene extends Phaser.Scene {
         this.physics.add.collider(this.player1.player, this.player2.player);
         this.physics.add.overlap(this.player2.specialAttacks, this.player1.player, this.handlePlayer1HittedBySpecialAttack, null, this);
         this.physics.add.overlap(this.player1.specialAttacks, this.player2.player, this.handlePlayer2HittedBySpecialAttack, null, this);
-
+        this.timerText.setVisible(true);
         this.timer = this.time.addEvent({
             delay: 1000,
             callback: this.updateTimer,
@@ -203,9 +249,19 @@ export default class MainScene extends Phaser.Scene {
         this.headerGroup.setVisible(false);
         this.timerText.setVisible(false);
         this.timer.paused = true;
-        this.musicFarm.stop();
+        this.musicBack.stop();
         this.initalBox.setVisible(true);
-        this.title.setVisible(true);
+        this.GameWonTitle.setVisible(true);
+        var wonTitle = 'It was a tie!';
+        if(this.player1.lifeHealth < this.player2.lifeHealth){
+            wonTitle = this.player2.config.name.trim() + ' Won!'
+        } else if(this.player1.lifeHealth > this.player2.lifeHealth) {
+            wonTitle = this.player1.config.name.trim() + ' Won!'
+        }
+        this.GameWonTitle.setText(wonTitle);
+        this.musicWon.play();
+        this.GameWonTitle.setVisible(true);
+        // this.title.setVisible(true);
         this.startButton.setText('Play Again');
         this.startButton.on('pointerdown', () => {
         if (!this.gameStarted && !this.gameOver) {
@@ -226,7 +282,7 @@ export default class MainScene extends Phaser.Scene {
         if (this.player1.player.body.enable) {this.tweens.add({
             targets: [this.player1.player, this.player2.player],
             alpha: 0,
-            duration: 2000,
+            duration: 50,
             onComplete: () => {
                 this.player1.player.disableBody(true, true);
                 this.player2.player.disableBody(true, true);
