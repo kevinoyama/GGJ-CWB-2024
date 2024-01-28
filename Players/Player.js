@@ -24,6 +24,7 @@ export default class Player {
             frameWidth: 300, frameHeight: 400 // 
         });
         this.game.load.audio(this.attack_audio_key,[this.config.attack_audio]);
+        this.game.load.image(this.special_attack_key, this.config.special_attack_image);
     }
 
     create() {
@@ -71,6 +72,24 @@ export default class Player {
     update() {
         this.handleMovements();
         // this.checkWorldBounds();
+    }
+    launchSpecialAttack() {
+        var attackDirection = (this.player.scaleX > 0) ? 1 : -1;
+        var attackStartX = this.player.x + (attackDirection === 1 ? 100 : -100);
+
+        var specialAttack = this.game.physics.add.sprite(attackStartX, this.player.y, this.special_attack_key);
+        specialAttack.setScale(0.3);
+        specialAttack.rotation = 1;
+        this.specialAttacks.add(specialAttack);
+
+        var attackSpeed = 1200 * attackDirection;
+        var attackAcceleration = -2600;
+
+        specialAttack.setVelocityX(attackSpeed);
+        specialAttack.setAccelerationY(attackAcceleration)
+        this.game.time.delayedCall(1500, function () {
+            specialAttack.destroy();
+        }, [], this);
     }
 
     recharge() {
