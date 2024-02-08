@@ -11,7 +11,7 @@ export default class MainScene extends Phaser.Scene {
         this.life = 3;
         this.timerTime = 90;
         this.configProfiles = [{
-            name: 'Capy  ',
+            name: 'Capy',
             spritesheet: '../assets/capysprite.png',
             attack_audio: '../assets/Golpe aplicado capivara.m4a',
             hitted_audio: '../assets/Golpe tomado Capivara.m4a',
@@ -19,9 +19,11 @@ export default class MainScene extends Phaser.Scene {
             special_attack_image: '../assets/Pinhao.png',
             start_y: 400,
             defend_frame_start: 20,
-            defend_frame_end: 22
+            defend_frame_end: 22,
+            attack_frame_start: 27,
+            attack_frame_end: 30
         }, {
-            name: 'Pizza ',
+            name: 'Pizza',
             spritesheet: '../assets/pizzasprite.png',
             attack_audio: '../assets/Golpe aplicado pizza.m4a',
             hitted_audio: '../assets/Golpe tomado pizza.m4a',
@@ -29,7 +31,9 @@ export default class MainScene extends Phaser.Scene {
             special_attack_image: '../assets/Calabresa.png',
             start_y: 400,
             defend_frame_start: 20,
-            defend_frame_end: 23
+            defend_frame_end: 23,
+            attack_frame_start: 27,
+            attack_frame_end: 28
         }, {
             name: 'Pillow',
             spritesheet: '../assets/Pillowsprite.png',
@@ -39,7 +43,9 @@ export default class MainScene extends Phaser.Scene {
             start_y: 400,
             special_attack_image: '../assets/pillow-projectile.png',
             defend_frame_start: 20,
-            defend_frame_end: 23
+            defend_frame_end: 23,
+            attack_frame_start: 27,
+            attack_frame_end: 28
         }];
 
         this.player1ProfileNumber = this.getRandomInt(3);
@@ -47,7 +53,9 @@ export default class MainScene extends Phaser.Scene {
         while (this.player2ProfileNumber == this.player1ProfileNumber) {
             this.player2ProfileNumber = this.getRandomInt(3);
         }
+        // TODO create a simple menu - be able to choose a figther.
         this.player1Profile = this.configProfiles[this.player1ProfileNumber];
+        //this.player1Profile = this.configProfiles[1];
         this.player2Profile = this.configProfiles[this.player2ProfileNumber];
         this.player1 = new Player(this, { ...this.player1Profile, start_x: 200 }, 1);
         this.player2 = new Player(this, { ...this.player2Profile, start_x: 824 }, 2);
@@ -71,10 +79,10 @@ export default class MainScene extends Phaser.Scene {
         this.initalBox.setAlpha(0.5);
         this.title = this.add.image(this.cameras.main.centerX, 250, 'title').setScale(0.5);
         this.headerGroup = this.add.group();
-        this.player1HealthBack = this.add.rectangle(220, 80, 400, 30,0xFF5733);
-        this.player2HealthBack = this.add.rectangle(804, 80, 400, 30,0xFF5733);
-        this.player1Health = this.add.rectangle(220, 80, 400, 30,0x068928 );
-        this.player2Health = this.add.rectangle(804, 80, 400, 30,0x068928 );
+        this.player1HealthBack = this.add.rectangle(220, 80, 400, 30, 0xFF5733);
+        this.player2HealthBack = this.add.rectangle(804, 80, 400, 30, 0xFF5733);
+        this.player1Health = this.add.rectangle(220, 80, 400, 30, 0x068928);
+        this.player2Health = this.add.rectangle(804, 80, 400, 30, 0x068928);
         this.player1Name = this.add.text(23, 38, '', {
             fontFamily: 'Arial',
             fontSize: 24,
@@ -118,7 +126,7 @@ export default class MainScene extends Phaser.Scene {
             borderRadius: 10
         }).setOrigin(0.5).setInteractive();
 
-        this.GameWonTitle = this.add.text(this.cameras.main.centerX - 10, 330,'Player 1 won',{
+        this.GameWonTitle = this.add.text(this.cameras.main.centerX - 10, 330, 'Player 1 won', {
             fontFamily: 'Arial',
             fontSize: 64,
             color: '#ffffff',
@@ -155,12 +163,12 @@ export default class MainScene extends Phaser.Scene {
         this.timerText.setVisible(false);
         // this.player1.create();
         // this.player2.create();
-        
+
 
     }
 
     update() {
-        if(this.gameStarted){
+        if (this.gameStarted) {
             this.player1.update();
             this.player2.update();
         }
@@ -177,7 +185,7 @@ export default class MainScene extends Phaser.Scene {
             var size = 4 * this.player1.lifeHealth;
             this.player1Health.setSize(size, 30);
             this.player1Health.setPosition(xAxis, 80);
-            if(this.player1.lifeHealth <= 0) {
+            if (this.player1.lifeHealth <= 0) {
                 this.endGame();
             }
         }
@@ -193,7 +201,7 @@ export default class MainScene extends Phaser.Scene {
             var size = 4 * this.player2.lifeHealth;
             this.player2Health.setSize(size, 30);
             this.player2Health.setPosition(xAxis, 80);
-            if(this.player2.lifeHealth <= 0) {
+            if (this.player2.lifeHealth <= 0) {
                 this.endGame();
             }
         }
@@ -253,9 +261,9 @@ export default class MainScene extends Phaser.Scene {
         this.initalBox.setVisible(true);
         this.GameWonTitle.setVisible(true);
         var wonTitle = 'It was a tie!';
-        if(this.player1.lifeHealth < this.player2.lifeHealth){
+        if (this.player1.lifeHealth < this.player2.lifeHealth) {
             wonTitle = this.player2.config.name.trim() + ' Won!'
-        } else if(this.player1.lifeHealth > this.player2.lifeHealth) {
+        } else if (this.player1.lifeHealth > this.player2.lifeHealth) {
             wonTitle = this.player1.config.name.trim() + ' Won!'
         }
         this.GameWonTitle.setText(wonTitle);
@@ -264,12 +272,12 @@ export default class MainScene extends Phaser.Scene {
         // this.title.setVisible(true);
         this.startButton.setText('Play Again');
         this.startButton.on('pointerdown', () => {
-        if (!this.gameStarted && !this.gameOver) {
-            this.startGame();
-        } else if (this.gameOver) {
-            this.restartGame();
-        }
-    });
+            if (!this.gameStarted && !this.gameOver) {
+                this.startGame();
+            } else if (this.gameOver) {
+                this.restartGame();
+            }
+        });
 
         this.startButton.setVisible(true);
         this.gameStarted = false;
@@ -279,17 +287,18 @@ export default class MainScene extends Phaser.Scene {
     }
 
     fadeOutCharacters() {
-        if (this.player1.player.body.enable) {this.tweens.add({
-            targets: [this.player1.player, this.player2.player],
-            alpha: 0,
-            duration: 50,
-            onComplete: () => {
-                this.player1.player.disableBody(true, true);
-                this.player2.player.disableBody(true, true);
-            }
-        });
-    }
-        
+        if (this.player1.player.body.enable) {
+            this.tweens.add({
+                targets: [this.player1.player, this.player2.player],
+                alpha: 0,
+                duration: 50,
+                onComplete: () => {
+                    this.player1.player.disableBody(true, true);
+                    this.player2.player.disableBody(true, true);
+                }
+            });
+        }
+
     }
 
 
@@ -299,11 +308,11 @@ export default class MainScene extends Phaser.Scene {
         this.gameOver = false;
         this.player1.player.alpha = 1;
         this.player2.player.alpha = 1;
-    
+
         if (!this.gameStarted) {
             this.startButton.setVisible(true);
         }
-    
+
         this.startGame();
     }
 

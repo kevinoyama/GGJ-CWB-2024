@@ -33,7 +33,7 @@ export default class Player {
 
     create() {
         this.player = this.game.physics.add.sprite(this.config.start_x, this.config.start_y, this.config.name).setScale(this.playerScale).refreshBody();
-        if(this.playerId == 2) {
+        if (this.playerId == 2) {
             this.player.scaleX = -this.playerScale;
         }
         this.specialAttacks = this.game.physics.add.group();
@@ -76,11 +76,25 @@ export default class Player {
         this.commands.defend.on('up', () => {
             this.isDefending = false;
         }, this);
+
+        /*         this.commands.attack.on('down', () => {
+                    this.isAttacking = true;
+                    this.player.anims.play(this.attack_key, true);
+                    console.log('start attack');
+                }, this);
+        
+                this.commands.attack.on('up', () => {
+                    //this.player.play(this.attack_key, true);
+                    this.isAttacking = false;
+                    console.log('stop attack');
+                }, this);
+         */
+
     }
     update() {
         this.handleMovements();
-        // this.checkWorldBounds();
     }
+
     launchSpecialAttack() {
         var attackDirection = (this.player.scaleX > 0) ? 1 : -1;
         var attackStartX = this.player.x + (attackDirection === 1 ? 100 : -100);
@@ -101,8 +115,10 @@ export default class Player {
     }
 
     recharge() {
-        this.totalOfAttacks = 5;
+        this.totalOfAttacks = 10;
+
     }
+
 
     createAnims() {
         this.game.anims.create({
@@ -140,33 +156,37 @@ export default class Player {
 
         this.game.anims.create({
             key: this.attack_key,
-            frames: this.game.anims.generateFrameNumbers(this.config.name, { start: 20, end: 23 }),
-            frameRate: 20,
-            repeat: 1,
+            frames: this.game.anims.generateFrameNumbers(this.config.name, {
+                start: this.config.attack_frame_start, end: this.config.attack_frame_end
+            }),
+            frameRate: 12,
+            repeat: 10
         });
 
         this.game.anims.create({
             key: this.defend_key,
-            frames: this.game.anims.generateFrameNumbers(this.config.name, { start: this.config.defend_frame_start, end: this.config.defend_frame_end }),
+            frames: this.game.anims.generateFrameNumbers(this.config.name, {
+                start: this.config.defend_frame_start, end: this.config.defend_frame_end
+            }),
             frameRate: 30,
             repeat: 0
         });
 
     }
 
-    /*     attacking() {
-            this.player.play('pizza-punch', true);
-        } */
+
 
     handleMovements() {
 
         if (this.commands.right.isDown) {
             this.isDefending = false;
+            this.isAttacking = false;
             this.player.setVelocityX(550);
             this.player.scaleX = this.playerScale;
             this.player.play(this.walk_key, true);
         } else if (this.commands.left.isDown) {
             this.isDefending = false;
+            this.isAttacking = false;
             this.player.setVelocityX(-550);
             this.player.scaleX = -this.playerScale;
             this.player.anims.play(this.walk_key, true);
@@ -180,6 +200,7 @@ export default class Player {
 
         if (this.commands.jump.isDown && this.player.body.blocked.down) {
             this.isDefending = false;
+            this.isAttacking = false;
             this.player.setVelocityY(-1400);
         } else if (this.player.body.velocity.y < 0) {
             this.isDefending = false;
@@ -188,8 +209,16 @@ export default class Player {
 
         if (this.player.body.velocity.y > 0) {
             this.isDefending = false;
+            this.isAttacking = false;
             this.player.play(this.fall_key, true);
         }
+
+        if (this.commands.attack.isDown) {
+            this.player.play(this.attack_key, true);
+            // TODO check if a hit is confirmed.
+            // implement the whole logic attack-attack, attack-defend, defend-attack
+        }
+
     }
 
 }
