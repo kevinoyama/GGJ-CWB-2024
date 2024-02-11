@@ -77,19 +77,15 @@ export default class Player {
             this.isDefending = false;
         }, this);
 
-        /*         this.commands.attack.on('down', () => {
-                    this.isAttacking = true;
-                    this.player.anims.play(this.attack_key, true);
-                    console.log('start attack');
-                }, this);
-        
-                this.commands.attack.on('up', () => {
-                    //this.player.play(this.attack_key, true);
-                    this.isAttacking = false;
-                    console.log('stop attack');
-                }, this);
-         */
+        this.commands.attack.on('down', (event) => {
+            this.isAttacking = true;
+            this.player.anims.play(this.attack_key, true);
+        }, this)
 
+        this.commands.attack.on('up', () => {
+            this.isAttacking = false;
+        }, this);
+ 
     }
     update() {
         this.handleMovements();
@@ -118,6 +114,7 @@ export default class Player {
         this.totalOfAttacks = 10;
 
     }
+
 
 
     createAnims() {
@@ -180,43 +177,40 @@ export default class Player {
 
         if (this.commands.right.isDown) {
             this.isDefending = false;
-            this.isAttacking = false;
+
             this.player.setVelocityX(550);
             this.player.scaleX = this.playerScale;
             this.player.play(this.walk_key, true);
         } else if (this.commands.left.isDown) {
             this.isDefending = false;
-            this.isAttacking = false;
+
             this.player.setVelocityX(-550);
             this.player.scaleX = -this.playerScale;
             this.player.anims.play(this.walk_key, true);
         }
         else {
             this.player.setVelocityX(0);
-            if (!this.isDefending) {
+            if (!this.isDefending && !this.isAttacking) {
                 this.player.play(this.steady_key, true);
             }
         }
 
         if (this.commands.jump.isDown && this.player.body.blocked.down) {
             this.isDefending = false;
-            this.isAttacking = false;
+
             this.player.setVelocityY(-1400);
-        } else if (this.player.body.velocity.y < 0) {
+        } else if (this.player.body.velocity.y < 0 && !this.isAttacking) {
             this.isDefending = false;
             this.player.play(this.jump_key, true);
         }
 
         if (this.player.body.velocity.y > 0) {
             this.isDefending = false;
-            this.isAttacking = false;
-            this.player.play(this.fall_key, true);
-        }
+            if (!this.isAttacking) {
 
-        if (this.commands.attack.isDown) {
-            this.player.play(this.attack_key, true);
-            // TODO check if a hit is confirmed.
-            // implement the whole logic attack-attack, attack-defend, defend-attack
+                this.player.play(this.fall_key, true);
+                
+            }
         }
 
     }

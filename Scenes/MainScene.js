@@ -180,7 +180,7 @@ export default class MainScene extends Phaser.Scene {
         this.player1.hittedSound.play();
 
         if (!this.player1.isDefending && !this.gameOver) {
-            this.player1.lifeHealth -= 5;
+            this.player1.lifeHealth -= 15;
             var xAxis = 20 + 2 * this.player1.lifeHealth;
             var size = 4 * this.player1.lifeHealth;
             this.player1Health.setSize(size, 30);
@@ -196,7 +196,7 @@ export default class MainScene extends Phaser.Scene {
         attack.disableBody(true, true);
 
         if (!this.player2.isDefending && !this.gameOver) {
-            this.player2.lifeHealth -= 5;
+            this.player2.lifeHealth -= 15;
             var xAxis = 1004 - 2 * this.player2.lifeHealth;
             var size = 4 * this.player2.lifeHealth;
             this.player2Health.setSize(size, 30);
@@ -208,6 +208,35 @@ export default class MainScene extends Phaser.Scene {
         console.log('Player 2: ', this.player2.lifeHealth);
     }
 
+    handleNormalAttackP1() {
+        if (!this.player2.isDefending && !this.gameOver && this.player1.isAttacking) {
+            this.player2.lifeHealth -= 0.5;
+            var xAxis = 1004 - 2 * this.player2.lifeHealth;
+            var size = 4 * this.player2.lifeHealth;
+            this.player2Health.setSize(size, 30);
+            this.player2Health.setPosition(xAxis, 80);
+            if (this.player2.lifeHealth <= 0) {
+                this.endGame();
+            }
+        }
+        console.log('Player 2: ', this.player2.lifeHealth);
+ 
+  }
+     handleNormalAttackP2() {
+        if (!this.player1.isDefending && !this.gameOver && this.player2.isAttacking) {
+            this.player1.lifeHealth -= 0.5;
+            var xAxis = 20 + 2 * this.player1.lifeHealth;
+            var size = 4 * this.player1.lifeHealth;
+            this.player1Health.setSize(size, 30);
+            this.player1Health.setPosition(xAxis, 80);
+            if (this.player1.lifeHealth <= 0) {
+                this.endGame();
+            }
+        }
+        console.log('Player 1: ', this.player1.lifeHealth);
+ 
+  }
+ 
     getRandomInt(max) {
         return Math.floor(Math.random() * max);
     }
@@ -215,24 +244,41 @@ export default class MainScene extends Phaser.Scene {
     startGame() {
         this.player1.lifeHealth = 100;
         this.player2.lifeHealth = 100;
+
         this.GameWonTitle.setVisible(false);
         this.initalBox.setVisible(false);
         this.title.setVisible(false);
+        // health bars
         this.player1Health.setSize(400, 30);
         this.player1Health.setPosition(220, 80);
         this.player2Health.setSize(400, 30);
         this.player2Health.setPosition(804, 80);
+
         this.headerGroup.setVisible(true);
         this.gameStarted = true;
         this.musicBack.play();
         this.startButton.setVisible(false);
+
+        // create players
         this.player1.create();
         this.player2.create();
         this.player1Name.setText(this.player1.config.name);
         this.player2Name.setText(this.player2.config.name);
+
+        // TODO not working players collider check
         this.physics.add.collider(this.player1.player, this.player2.player);
+        
+        // check if special attack was successful for both players
         this.physics.add.overlap(this.player2.specialAttacks, this.player1.player, this.handlePlayer1HittedBySpecialAttack, null, this);
         this.physics.add.overlap(this.player1.specialAttacks, this.player2.player, this.handlePlayer2HittedBySpecialAttack, null, this);
+        
+        // check if normal attack was successful for both players
+
+        this.physics.add.overlap(this.player1.player, this.player2.player, this.handleNormalAttackP1, null, this);
+        this.physics.add.overlap(this.player2.player, this.player1.player, this.handleNormalAttackP2, null, this);
+     //   this.physics.add.overlap(this.player1.specialAttacks, this.player2.player, this.handlePlayer2HittedBySpecialAttack, null, this);
+
+
         this.timerText.setVisible(true);
         this.timer = this.time.addEvent({
             delay: 1000,
